@@ -18,7 +18,7 @@ id | sudo tee -a /var/www/html/index.html >/dev/null
 echo "---------------------------" | sudo tee -a /var/www/html/index.html >/dev/null
 env | grep -v LS_COLORS | sort | sudo tee -a /var/www/html/index.html >/dev/null
 echo "---------------------------" | sudo tee -a /var/www/html/index.html >/dev/null
-cat /tmp/rpmlist.txt | sudo tee -a /var/www/html/index.html >/dev/null
-echo "---------------------------" | sudo tee -a /var/www/html/index.html >/dev/null
+# cat /tmp/rpmlist.txt | sudo tee -a /var/www/html/index.html >/dev/null
+# echo "---------------------------" | sudo tee -a /var/www/html/index.html >/dev/null
 echo "</pre>" | sudo tee -a /var/www/html/index.html >/dev/null
 sudo systemctl restart httpd
