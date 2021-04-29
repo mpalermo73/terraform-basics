@@ -46,14 +46,17 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      id: init
       run: terraform init
 
     # Make all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
+      id: format
       run: terraform fmt -recursive -diff
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Check
+      id: check
       run: terraform fmt -recursive -check
 
     # Generates an execution plan for Terraform
@@ -61,7 +64,8 @@ jobs:
       id: plan
       # if: github.event_name == 'pull_request'
       continue-on-error: true
-      run: terraform plan -no-color -compact-warnings -out myoutfile.out
+      run: terraform plan -no-color -compact-warnings
+       # -out myoutfile.out
 
     # Terraform Plan Status returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
     - name: Terraform Plan Status
@@ -69,6 +73,13 @@ jobs:
       run: exit 1
 
     # Update Pull Request adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (steps.plan.outputs.stdout). This allows your team to review the results of the plan directly in the PR instead of opening Terraform Cloud. This step only runs on pull requests.
+
+    - name: token
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }}
+        echo ${{ github.event_name }}
+
+
     - name: Update Pull Request
       uses: actions/github-script@0.9.0
       # if: github.event_name == 'pull_request'
@@ -77,7 +88,8 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.format.outcome }}\`
+          #### Terraform Check ⚙️\`${{ steps.check.outcome }}\`
           #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
           #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
           <details><summary>Show Plan</summary>
