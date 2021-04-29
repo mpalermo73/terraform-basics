@@ -50,26 +50,34 @@ jobs:
 
     # Make all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
-      run: terraform fmt
+      run: terraform fmt -recursive -diff
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Check
-      run: terraform fmt -check
+      run: terraform fmt -recursive -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan
-  #
-  # apply-terraform:
-  #   if: ${{ always() }}
-  #   environment: 'approve-plan'
-  #
-  #   - name: Do Something
-  #     run: |
-  #       env | sort
-  #
-  #     # On push to master, build or change infrastructure according to Terraform configuration files
-  #     # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-  #   # - name: Terraform Apply
-  #   #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-  #   #   run: terraform apply -auto-approve
+      run: terraform plan -compact-warnings
+
+  apply-terraform:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    environment: 'approve-plan'
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+
+    - name: Do Something
+      run: |
+        env | sort
+
+      # On push to master, build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    # - name: Terraform Apply
+    #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    #   run: terraform apply -auto-approve
