@@ -1,0 +1,136 @@
+---
+name: 'Terraform Apply'
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #   - master
+  # pull_request:
+
+jobs:
+
+  plan-terraform:
+    if: ${{ always() }}
+    # name: 'Terraform'
+    runs-on: ubuntu-latest
+    # environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+        role-duration-seconds: 1200
+        role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
+
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      # with:
+      #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Make all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -recursive -diff
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Check
+      run: terraform fmt -recursive -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      continue-on-error: true
+      run: terraform plan -no-color -compact-warnings -out myoutfile.out
+
+    # Terraform Plan Status returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    # Update Pull Request adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (steps.plan.outputs.stdout). This allows your team to review the results of the plan directly in the PR instead of opening Terraform Cloud. This step only runs on pull requests.
+    - name: Update Pull Request
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan</summary>
+          \`\`\`${process.env.PLAN}\`\`\`
+          </details>
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    # Terraform Apply applies the configuration. This step will only run when a commit is pushed to master.
+    # - name: Terraform Apply
+    #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    #   run: terraform apply -auto-approve
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: echo terraform apply -auto-approve
+
+
+    - name: Print Environment
+      run: |
+        env | sort
+
+    - name: List Directory
+      run: |
+        find .
+
+  # apply-terraform:
+  #   if: ${{ always() }}
+  #   runs-on: ubuntu-latest
+  #   environment: 'approve-plan'
+  #
+  #   # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #
+  #   steps:
+  #
+  #   - name: Print Environment
+  #     run: |
+  #       env | sort
+  #
+  #   - name: List Directory
+  #     run: |
+  #       find .
+  #
+  #     # On push to master, build or change infrastructure according to Terraform configuration files
+  #     # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+  #   # - name: Terraform Apply
+  #   #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+  #   #   run: terraform apply -auto-approve

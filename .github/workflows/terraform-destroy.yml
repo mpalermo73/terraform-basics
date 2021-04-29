@@ -1,5 +1,5 @@
 ---
-name: 'Terraform'
+name: 'Terraform Apply'
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  plan-terraform:
+  terraform-plan:
     if: ${{ always() }}
     # name: 'Terraform'
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
 
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -58,18 +58,17 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -compact-warnings -out myoutfile.out
+      id: plan
+      continue-on-error: true
+      run: terraform plan -destroy -no-color -compact-warnings
+       # -out myoutfile.out
 
-    - name: Print Environment
-      run: |
-        env | sort
-
-    - name: List Directory
-      run: |
-        find .
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
 
 
-  apply-terraform:
+  terraform-destroy:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     environment: 'approve-plan'
@@ -81,16 +80,46 @@ jobs:
 
     steps:
 
-    - name: Print Environment
-      run: |
-        env | sort
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+        role-duration-seconds: 1200
+        role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
 
-    - name: List Directory
-      run: |
-        find .
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
 
-      # On push to master, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    # - name: Terraform Apply
-    #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    #   run: terraform apply -auto-approve
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      # with:
+      #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Make all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -recursive -diff
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Check
+      run: terraform fmt -recursive -check
+
+    # Generates an execution destroy for Terraform
+    - name: Terraform Plan
+      id: destroy
+      continue-on-error: true
+      run: terraform destroy -auto-approve
+       # -out myoutfile.out
+
+    - name: Terraform Plan Status
+      if: steps.destroy.outcome == 'failure'
+      run: exit 1
