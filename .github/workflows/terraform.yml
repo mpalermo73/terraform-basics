@@ -103,7 +103,8 @@ jobs:
       run: terraform plan
 
   apply-terraform:
-    environment: approve-plan
+
+    # environment: approve-plan
 
     - name: Do Something
       run: |
