@@ -52,10 +52,11 @@ on:
   # pull_request:
 
 jobs:
-  terraform:
+
+  plan-terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: production
+    # environment: production
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -99,8 +100,14 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      environment: approve-plan
       run: terraform plan
+
+  apply-terraform:
+    environment: approve-plan
+
+    - name: Do Something
+      run: |
+        env | sort
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
