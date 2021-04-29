@@ -58,7 +58,16 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -compact-warnings
+      run: terraform plan -compact-warnings -out myoutfile.out
+
+    - name: Print Environment
+      run: |
+        env | sort
+
+    - name: List Directory
+      run: |
+        find .
+
 
   apply-terraform:
     if: ${{ always() }}
