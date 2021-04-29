@@ -59,7 +59,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      if: github.event_name == 'pull_request'
+      # if: github.event_name == 'pull_request'
       continue-on-error: true
       run: terraform plan -no-color -compact-warnings -out myoutfile.out
 
@@ -71,7 +71,7 @@ jobs:
     # Update Pull Request adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (steps.plan.outputs.stdout). This allows your team to review the results of the plan directly in the PR instead of opening Terraform Cloud. This step only runs on pull requests.
     - name: Update Pull Request
       uses: actions/github-script@0.9.0
-      if: github.event_name == 'pull_request'
+      # if: github.event_name == 'pull_request'
       env:
         PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
       with:
