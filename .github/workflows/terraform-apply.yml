@@ -76,8 +76,10 @@ jobs:
 
     - name: token
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }}
-        echo ${{ github.event_name }}
+        echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+        echo "event_name: ${{ github.event_name }}"
+        echo "event_number: ${{ github.event_number }}"
+        echo "event.number: ${{ github.event.number }}"
 
 
     - name: Update Pull Request
@@ -98,7 +100,7 @@ jobs:
           *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
 
           github.issues.createComment({
-            issue_number: "${{ github.event.number }}",
+            issue_number: github.event.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: output
