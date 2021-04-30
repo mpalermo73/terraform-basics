@@ -92,7 +92,7 @@ jobs:
       run: |
         curl -v -X POST \
           -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
           "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
 
     # - uses: vishnudxb/cancel-workflow@v1.2
