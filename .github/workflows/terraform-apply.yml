@@ -61,7 +61,7 @@ jobs:
 
     - name: PRINT
       run: |
-        echo "${{ GITHUB_JOB }}_${{ GITHUB_EVENT_NAME }}.plan"
+        echo "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
         echo "${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}.plan"
         exit 1
 
