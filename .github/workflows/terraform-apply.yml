@@ -59,13 +59,25 @@ jobs:
       id: check
       run: terraform fmt -recursive -check
 
+    - name: Make Plan Outfile Name
+      id: plan-filename
+      run: echo "$(date +%Y%m%d_%H%M%S).plan"
+
+
+    - name: Print Plan Outfile Name
+      run: echo ${{plan-filename.outputs.stdout}}
+
+
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
       # if: github.event_name == 'pull_request'
       # continue-on-error: true
-      run: terraform plan -no-color -compact-warnings
-       # -out myoutfile.out
+      run: terraform plan -compact-warnings
+      # -no-color
+      # -out myoutfile.out
+
+
 
     # # Terraform Plan Status returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
     # - name: Terraform Plan Status
