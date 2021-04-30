@@ -70,7 +70,7 @@ jobs:
     - name: PRINT
       id: print-stuff
       run: |
-        echo "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${{ github.run_id }}/cancel"
+        echo "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
         echo "${GITHUB_REPOSITORY}"
         echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
@@ -83,15 +83,17 @@ jobs:
     - name: Terraform Plan
       id: plan
       # if: ${{ steps.print-stuff.}}
-      run: terraform plan -compact-warnings -out "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
+      run: terraform plan -compact-warnings -out "$${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
 
 
     - name: cancel if failed
       id: cancel-if-failed
       if: failure()
       run: |
-        curl -v -X POST -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${{ github.run_id }}/cancel"
+        curl -v -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
 
     # - uses: vishnudxb/cancel-workflow@v1.2
     #   if: failure()
