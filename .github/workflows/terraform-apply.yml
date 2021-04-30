@@ -70,7 +70,8 @@ jobs:
     - name: PRINT
       id: print-stuff
       run: |
-        echo "https://api.github.com/repos/${{github.owner}}/${{github.repo}}/actions/runs/${{github.run_id}}/cancel"
+        echo "https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ github.run_id }}/cancel"
+        echo "env.GITHUB_REPOSITORY"
         echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
         exit 1
@@ -89,8 +90,7 @@ jobs:
       id: cancel-if-failed
       if: failure()
       run: |
-        curl -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
+        curl -v -X POST -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ github.run_id }}/cancel"
 
     # - uses: vishnudxb/cancel-workflow@v1.2
