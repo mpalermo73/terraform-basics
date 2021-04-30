@@ -60,14 +60,19 @@ jobs:
       run: terraform fmt -recursive -check
 
     - name: PRINT
+      id: print-stuff
       run: |
-        echo "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
-        echo "${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}.plan"
+        echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
+        echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
         exit 1
+
+    - name: print result
+      run: echo "${{steps.print-stuff.outputs.result}}"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
+      # if: ${{ steps.print-stuff.}}
       run: terraform plan -compact-warnings -out "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
 
 
@@ -78,6 +83,13 @@ jobs:
     - name: List Directory
       run: |
         find .
+
+    - uses: vishnudxb/cancel-workflow@v1.2
+      if: failure()
+      with:
+        repo: octocat/hello-world
+        workflow_id: ${{ github.run_id }}
+        access_token: ${{ github.token }}
 
   apply-terraform:
     if: ${{ always() }}
