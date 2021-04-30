@@ -75,13 +75,19 @@ jobs:
         # utcOffset: "+08:00"
     - name: Use current time
       env:
-        PLANOUTNAME: "${{ steps.current-time.outputs.time }}"
+        PLANOUTNAME: "${{ steps.current-time.outputs.formattedTime }}.plan"
         TIME: "${{ steps.current-time.outputs.time }}"
         R_TIME: "${{ steps.current-time.outputs.readableTime }}"
         F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
         YEAR: "${{ steps.current-time.outputs.year }}"
         DAY: "${{ steps.current-time.outputs.day }}"
-      run: echo $TIME $R_TIME $F_TIME $YEAR $DAY $PLANOUTNAME
+      run: |
+        echo "TIME: $TIME"
+        echo "R_TIME: $R_TIME"
+        echo "F_TIME: $F_TIME"
+        echo "YEAR: $YEAR"
+        echo "DAY: $DAY"
+        echo "PLANOUTNAME: $PLANOUTNAME"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
