@@ -68,7 +68,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      run: terraform plan -compact-warnings -out "${{ GITHUB_JOB }}_${{ GITHUB_EVENT_NAME }}.plan"
+      run: terraform plan -compact-warnings -out "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
 
 
     - name: Print Environment
