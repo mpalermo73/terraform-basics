@@ -60,12 +60,12 @@ jobs:
       run: terraform fmt -recursive -check
 
     - name: Make Plan Outfile Name
-      id: plan-filename
+      id: planfilename
       run: echo "$(date +%Y%m%d_%H%M%S).plan"
 
 
     - name: Print Plan Outfile Name
-      run: echo ${{plan-filename.outputs.stdout}}
+      run: echo ${{planfilename.outputs.stdout}}
 
 
     # Generates an execution plan for Terraform
