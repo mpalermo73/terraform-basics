@@ -85,8 +85,8 @@ jobs:
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ${{GITHUB_RUN_ID}}.plan
-        path: ${{GITHUB_RUN_ID}}.plan
+        name: "${{GITHUB_RUN_ID}}.plan"
+        path: "${{GITHUB_RUN_ID}}.plan"
 
     - name: List Directory
       run: |
