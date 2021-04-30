@@ -59,94 +59,16 @@ jobs:
       id: check
       run: terraform fmt -recursive -check
 
-    # - name: Make Plan Outfile Name
-    #   id: planfilename
-    #   run: echo "$(date +%Y%m%d_%H%M%S).plan"
-    #
-    #
-    # - name: Print Plan Outfile Name
-    #   run: echo ${{planfilename.outputs.stdout}}
-
-    - name: Get current time
-      uses: 1466587594/get-current-time@v2
-      id: current-time
-      with:
-        format: YYYYMMDD_HHMMSS
-        # utcOffset: "+08:00"
-
-    - name: Use current time
-      env:
-        PLANOUTNAME: "${{ steps.current-time.outputs.formattedTime }}.plan"
-        TIME: "${{ steps.current-time.outputs.time }}"
-        R_TIME: "${{ steps.current-time.outputs.readableTime }}"
-        F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
-        YEAR: "${{ steps.current-time.outputs.year }}"
-        DAY: "${{ steps.current-time.outputs.day }}"
+    - name: PRINT
       run: |
-        echo "TIME: $TIME"
-        echo "R_TIME: $R_TIME"
-        echo "F_TIME: $F_TIME"
-        echo "YEAR: $YEAR"
-        echo "DAY: $DAY"
-        echo "PLANOUTNAME: $PLANOUTNAME"
+        echo "${{ GITHUB_JOB }}_${{ GITHUB_EVENT_NAME }}.plan"
+        echo "${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}.plan"
+        exit 1
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      # if: github.event_name == 'pull_request'
-      # continue-on-error: true
-      run: terraform plan -compact-warnings -out "${{ steps.current-time.outputs.formattedTime }}.plan"
-      # -no-color
-      # -out myoutfile.out
-
-
-
-    # # Terraform Plan Status returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
-    # - name: Terraform Plan Status
-    #   if: steps.plan.outcome == 'failure'
-    #   run: exit 1
-    #
-    # # Update Pull Request adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (steps.plan.outputs.stdout). This allows your team to review the results of the plan directly in the PR instead of opening Terraform Cloud. This step only runs on pull requests.
-    #
-    # - name: token
-    #   run: |
-    #     echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
-    #     echo "event_name: ${{ github.event_name }}"
-    #     echo "event_number: ${{ github.event_number }}"
-    #     echo "event.number: ${{ github.event.number }}"
-    #
-    #
-    # - name: Update Pull Request
-    #   uses: actions/github-script@0.9.0
-    #   # if: github.event_name == 'pull_request'
-    #   env:
-    #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-    #   with:
-    #     github-token: ${{ secrets.GITHUB_TOKEN }}
-    #     script: |
-    #       const output = `#### Terraform Format and Style 🖌\`${{ steps.format.outcome }}\`
-    #       #### Terraform Check ⚙️\`${{ steps.check.outcome }}\`
-    #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-    #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-    #       <details><summary>Show Plan</summary>
-    #       \`\`\`${process.env.PLAN}\`\`\`
-    #       </details>
-    #       *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-    #
-    #       github.issues.createComment({
-    #         issue_number: 1,
-    #         owner: context.repo.owner,
-    #         repo: context.repo.repo,
-    #         body: output
-    #       })
-    #
-    # # Terraform Apply applies the configuration. This step will only run when a commit is pushed to master.
-    # # - name: Terraform Apply
-    # #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    # #   run: terraform apply -auto-approve
-    # - name: Terraform Apply
-    #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    #   run: echo terraform apply -auto-approve
+      run: terraform plan -compact-warnings -out "${{ GITHUB_JOB }}_${{ GITHUB_EVENT_NAME }}.plan"
 
 
     - name: Print Environment
