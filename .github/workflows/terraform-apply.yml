@@ -73,6 +73,7 @@ jobs:
       with:
         format: YYYYMMDD_HHMMSS
         # utcOffset: "+08:00"
+
     - name: Use current time
       env:
         PLANOUTNAME: "${{ steps.current-time.outputs.formattedTime }}.plan"
@@ -94,7 +95,7 @@ jobs:
       id: plan
       # if: github.event_name == 'pull_request'
       # continue-on-error: true
-      run: terraform plan -compact-warnings
+      run: terraform plan -compact-warnings -out "${{ steps.current-time.outputs.formattedTime }}.plan"
       # -no-color
       # -out myoutfile.out
 
@@ -167,6 +168,22 @@ jobs:
         shell: bash
 
     steps:
+
+    - name: Use current time
+      env:
+        PLANOUTNAME: "${{ steps.current-time.outputs.formattedTime }}.plan"
+        TIME: "${{ steps.current-time.outputs.time }}"
+        R_TIME: "${{ steps.current-time.outputs.readableTime }}"
+        F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+        YEAR: "${{ steps.current-time.outputs.year }}"
+        DAY: "${{ steps.current-time.outputs.day }}"
+      run: |
+        echo "TIME: $TIME"
+        echo "R_TIME: $R_TIME"
+        echo "F_TIME: $F_TIME"
+        echo "YEAR: $YEAR"
+        echo "DAY: $DAY"
+        echo "PLANOUTNAME: $PLANOUTNAME"
 
     - name: Print Environment
       run: |
