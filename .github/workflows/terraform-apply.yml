@@ -23,49 +23,49 @@ jobs:
 
     steps:
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-        # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-        # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
-        role-duration-seconds: 1200
-        role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
-
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      # with:
-      #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      id: init
-      run: terraform init
-
-    # Make all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      id: format
-      run: terraform fmt -recursive -diff
-
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Check
-      id: check
-      run: terraform fmt -recursive -check
-
-    - name: Print Environment
-      run: |
-        env | sort
-
-    - name: List Directory
-      run: |
-        find .
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: us-east-1
+    #     # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+    #     # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+    #     role-duration-seconds: 1200
+    #     role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
+    #
+    # # Checkout the repository to the GitHub Actions runner
+    # - name: Checkout
+    #   uses: actions/checkout@v2
+    #
+    # # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    # - name: Setup Terraform
+    #   uses: hashicorp/setup-terraform@v1
+    #   # with:
+    #   #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    #
+    # # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    # - name: Terraform Init
+    #   id: init
+    #   run: terraform init
+    #
+    # # Make all Terraform configuration files adhere to a canonical format
+    # - name: Terraform Format
+    #   id: format
+    #   run: terraform fmt -recursive -diff
+    #
+    # # Checks that all Terraform configuration files adhere to a canonical format
+    # - name: Terraform Check
+    #   id: check
+    #   run: terraform fmt -recursive -check
+    #
+    # - name: Print Environment
+    #   run: |
+    #     env | sort
+    #
+    # - name: List Directory
+    #   run: |
+    #     find .
 
     - name: PRINT
       id: print-stuff
@@ -74,26 +74,27 @@ jobs:
         echo "${GITHUB_REPOSITORY}"
         echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
-        exit 1
+
+      # exit 1
 
     - name: print result
       run: echo "${{steps.print-stuff.outputs.result}}"
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      id: plan
-      # if: ${{ steps.print-stuff.}}
-      run: terraform plan -compact-warnings -out "$${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
-
-
-    - name: cancel if failed
-      id: cancel-if-failed
-      if: failure()
-      run: |
-        curl -v -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
+    # # Generates an execution plan for Terraform
+    # - name: Terraform Plan
+    #   id: plan
+    #   # if: ${{ steps.print-stuff.}}
+    #   run: terraform plan -compact-warnings -out "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
+    #
+    #
+    # - name: cancel if failed
+    #   id: cancel-if-failed
+    #   if: failure()
+    #   run: |
+    #     curl -v -X POST \
+    #       -H "Accept: application/vnd.github.v3+json" \
+    #       -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
+    #       "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
 
     # - uses: vishnudxb/cancel-workflow@v1.2
     #   if: failure()
@@ -114,29 +115,21 @@ jobs:
 
     steps:
 
-    - name: Use current time
-      env:
-        PLANOUTNAME: "${{ steps.current-time.outputs.formattedTime }}.plan"
-        TIME: "${{ steps.current-time.outputs.time }}"
-        R_TIME: "${{ steps.current-time.outputs.readableTime }}"
-        F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
-        YEAR: "${{ steps.current-time.outputs.year }}"
-        DAY: "${{ steps.current-time.outputs.day }}"
+    - name: PRINT
+      id: print-stuff
       run: |
-        echo "TIME: $TIME"
-        echo "R_TIME: $R_TIME"
-        echo "F_TIME: $F_TIME"
-        echo "YEAR: $YEAR"
-        echo "DAY: $DAY"
-        echo "PLANOUTNAME: $PLANOUTNAME"
+        echo "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
+        echo "${GITHUB_REPOSITORY}"
+        echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
+        echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
 
-    - name: Print Environment
-      run: |
-        env | sort
-
-    - name: List Directory
-      run: |
-        find .
+    # - name: Print Environment
+    #   run: |
+    #     env | sort
+    #
+    # - name: List Directory
+    #   run: |
+    #     find .
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
