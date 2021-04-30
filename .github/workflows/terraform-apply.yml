@@ -59,6 +59,14 @@ jobs:
       id: check
       run: terraform fmt -recursive -check
 
+    - name: Print Environment
+      run: |
+        env | sort
+
+    - name: List Directory
+      run: |
+        find .
+
     - name: PRINT
       id: print-stuff
       run: |
@@ -77,21 +85,13 @@ jobs:
       run: terraform plan -compact-warnings -out "${{ env.GITHUB_JOB }}_${{ env.GITHUB_EVENT_NAME }}.plan"
 
 
-    - name: Print Environment
-      run: |
-        env | sort
-
-    - name: List Directory
-      run: |
-        find .
-
     - name: cancel if failed
       id: cancel-if-failed
       if: failure()
       run: |
         curl -X POST \
           -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${{github.owner}}/${{github.repo}}/actions/runs/${{github.run_id}}/cancel"
+          "https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ github.run_id }}/cancel"
 
     # - uses: vishnudxb/cancel-workflow@v1.2
     #   if: failure()
