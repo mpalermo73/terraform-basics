@@ -85,8 +85,8 @@ jobs:
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
       with:
-        name: "${{GITHUB_RUN_ID}}.plan"
-        path: "${{GITHUB_RUN_ID}}.plan"
+        name: "${{env.GITHUB_RUN_ID}}.plan"
+        path: "${{env.GITHUB_RUN_ID}}.plan"
 
     - name: List Directory
       run: |
@@ -145,7 +145,7 @@ jobs:
     # - name: Download outfile artifact
     #   uses: actions/download-artifact@v2
     #   with:
-    #     name: "${GITHUB_RUN_ID}.plan"
+    #     name: "${{env.GITHUB_RUN_ID}}.plan"
 
 
     - name: Download outfile artifact
