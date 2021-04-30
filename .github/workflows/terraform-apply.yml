@@ -62,6 +62,7 @@ jobs:
     - name: PRINT
       id: print-stuff
       run: |
+        echo "https://api.github.com/repos/${{github.owner}}/${{github.repo}}/actions/runs/${{github.run_id}}/cancel"
         echo "${GITHUB_JOB}_${GITHUB_EVENT_NAME}.plan"
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
         exit 1
@@ -84,12 +85,20 @@ jobs:
       run: |
         find .
 
-    - uses: vishnudxb/cancel-workflow@v1.2
+    - name: cancel if failed
+      id: cancel-if-failed
       if: failure()
-      with:
-        repo: octocat/hello-world
-        workflow_id: ${{ github.run_id }}
-        access_token: ${{ github.token }}
+      run: |
+        curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${{github.owner}}/${{github.repo}}/actions/runs/${{github.run_id}}/cancel"
+
+    # - uses: vishnudxb/cancel-workflow@v1.2
+    #   if: failure()
+    #   with:
+    #     repo: octocat/hello-world
+    #     workflow_id: ${{ github.run_id }}
+    #     access_token: ${{ github.token }}
 
   apply-terraform:
     if: ${{ always() }}
