@@ -84,21 +84,21 @@ jobs:
       id: plan
       # if: ${{ steps.print-stuff.}}
       # run: terraform plan -compact-warnings -out "${GITHUB_RUN_ID}.plan"
-      run: terraform plan -compact-warnings -out "plan.out"
+      run: terraform plan -compact-warnings -out "terraform.plan"
 
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
       with:
-        name: plan.out
-        path: plan.out
+        name: "terraform.plan"
+        path: "terraform.plan"
         # name: "${{env.GITHUB_RUN_ID}}.plan"
         # path: "${{env.GITHUB_RUN_ID}}.plan"
 
     # - name: Upload outfile artifact
     #   uses: actions/upload-artifact@v2
     #   with:
-    #     name: plan.out
-    #     path: plan.out
+    #     name: "terraform.plan"
+    #     path: "terraform.plan"
 
 
     # - name: cancel if failed
@@ -145,8 +145,8 @@ jobs:
     - name: Download outfile artifact
       uses: actions/download-artifact@v2
       with:
-        name: plan.out
-        path: plan.out
+        name: "terraform.plan"
+        path: "terraform.plan"
 
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
@@ -194,4 +194,4 @@ jobs:
     - name: Terraform Apply
       id: plan
       # if: ${{ steps.print-stuff.}}
-      run: terraform apply plan.out
+      run: terraform apply "terraform.plan"
