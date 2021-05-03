@@ -146,6 +146,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: plan.out
+        path: plan.out
 
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
@@ -185,7 +186,9 @@ jobs:
 
 
     - name: find
-      run: find .
+      run: |
+        echo PWD: $PWD
+        find .
 
     # Applies an execution plan
     - name: Terraform Apply
