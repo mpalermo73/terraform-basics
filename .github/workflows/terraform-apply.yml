@@ -142,12 +142,6 @@ jobs:
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
 
 
-    - name: Download outfile artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: "terraform.plan"
-        path: "terraform.plan"
-
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
@@ -157,6 +151,13 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    - name: Download outfile artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: "terraform.plan"
+        path: "terraform.plan"
+
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -189,9 +190,10 @@ jobs:
       run: |
         echo PWD: $PWD
         find .
+        find . -iname terraform.plan
 
     # Applies an execution plan
     - name: Terraform Apply
-      id: plan
+      id: apply
       # if: ${{ steps.print-stuff.}}
       run: terraform apply "terraform.plan"
