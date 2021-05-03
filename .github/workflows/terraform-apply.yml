@@ -183,8 +183,12 @@ jobs:
         role-duration-seconds: 1200
         role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
 
+
+    - name: find
+      run: find .
+
     # Applies an execution plan
     - name: Terraform Apply
       id: plan
       # if: ${{ steps.print-stuff.}}
-      run: terraform apply -out "plan.out"
+      run: terraform apply plan.out
