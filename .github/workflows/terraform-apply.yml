@@ -80,13 +80,16 @@ jobs:
     - name: Terraform Plan
       id: plan
       # if: ${{ steps.print-stuff.}}
-      run: terraform plan -compact-warnings -out "${GITHUB_RUN_ID}.plan"
+      # run: terraform plan -compact-warnings -out "${GITHUB_RUN_ID}.plan"
+      run: terraform plan -compact-warnings -out "plan.out"
 
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
       with:
-        name: "${{env.GITHUB_RUN_ID}}.plan"
-        path: "${{env.GITHUB_RUN_ID}}.plan"
+        name: plan.out
+        path: plan.out
+        # name: "${{env.GITHUB_RUN_ID}}.plan"
+        # path: "${{env.GITHUB_RUN_ID}}.plan"
 
     - name: List Directory
       run: |
@@ -167,6 +170,6 @@ jobs:
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    # - name: Terraform Apply
-    #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    #   run: terraform apply -auto-approve
+    - name: Terraform Apply
+      # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: terraform apply -auto-approve out.plan
