@@ -94,11 +94,11 @@ jobs:
         # name: "${{env.GITHUB_RUN_ID}}.plan"
         # path: "${{env.GITHUB_RUN_ID}}.plan"
 
-    - name: Upload outfile artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: plan.out
-        path: plan.out
+    # - name: Upload outfile artifact
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: plan.out
+    #     path: plan.out
 
 
     # - name: cancel if failed
