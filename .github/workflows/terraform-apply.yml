@@ -91,21 +91,11 @@ jobs:
         # name: "${{env.GITHUB_RUN_ID}}.plan"
         # path: "${{env.GITHUB_RUN_ID}}.plan"
 
-    - name: List Directory
-      run: |
-        find .
-
-
-    - name: List Directory
-      run: |
-        find . > foundfiles.txt
-
-
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
       with:
-        name: "foundfiles.txt"
-        path: "foundfiles.txt"
+        name: plan.out
+        path: plan.out
 
 
     # - name: cancel if failed
@@ -145,31 +135,65 @@ jobs:
         echo "${GITHUB_WORKFLOW}_${GITHUB_RUN_ID}.plan"
 
 
-    # - name: Download outfile artifact
-    #   uses: actions/download-artifact@v2
-    #   with:
-    #     name: "${{env.GITHUB_RUN_ID}}.plan"
-
-
     - name: Download outfile artifact
       uses: actions/download-artifact@v2
       with:
-        name: "foundfiles.txt"
+        name: plan.out
 
-    - name: cat files
-      run: cat "foundfiles.txt"
+    # On push to master, build or change infrastructure according to Terraform configuration files
+    # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    if: ${{ always() }}
+    # name: 'Terraform'
+    runs-on: ubuntu-latest
+    # environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
 
 
-    # - name: Print Environment
-    #   run: |
-    #     env | sort
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
 
-    - name: List Directory
-      run: |
-        find .
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # On push to master, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply -auto-approve out.plan
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    # Make all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      id: format
+      run: terraform fmt -recursive -diff
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Check
+      id: check
+      run: terraform fmt -recursive -check
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+        role-duration-seconds: 1200
+        role-session-name: ${{env.GITHUB_WORKFLOW}}-${{env.GITHUB_RUN_ID}}
+
+    # Applies an execution plan
+    - name: Terraform Plan
+      id: plan
+      # if: ${{ steps.print-stuff.}}
+      # run: terraform plan -compact-warnings -out "${GITHUB_RUN_ID}.plan"
+      run: terraform plan -compact-warnings -out "plan.out"
