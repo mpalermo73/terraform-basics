@@ -88,9 +88,10 @@ jobs:
 
     - name: Upload outfile artifact
       uses: actions/upload-artifact@v2
+      # working-directory: ./plans
       with:
         name: "terraform.plan"
-        path: "terraform.plan"
+        # path: "terraform.plan"
         # name: "${{env.GITHUB_RUN_ID}}.plan"
         # path: "${{env.GITHUB_RUN_ID}}.plan"
 
@@ -159,6 +160,15 @@ jobs:
         name: "terraform.plan"
         path: "."
 
+    - name: MKDIR
+      run: |
+        mkdir -p ./plans
+
+    - name: Download outfile artifact
+      uses: actions/download-artifact@v2
+      working-directory: ./infrastructure
+      with:
+        name: "terraform.plan"
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
