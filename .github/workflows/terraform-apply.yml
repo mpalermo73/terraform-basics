@@ -125,6 +125,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     environment: 'approve-plan'
+    needs: plan-terraform
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -192,8 +193,8 @@ jobs:
         find .
         find . -iname terraform.plan
 
-    # Applies an execution plan
-    - name: Terraform Apply
-      id: apply
-      # if: ${{ steps.print-stuff.}}
-      run: terraform apply "terraform.plan"
+    # # Applies an execution plan
+    # - name: Terraform Apply
+    #   id: apply
+    #   # if: ${{ steps.print-stuff.}}
+    #   run: terraform apply "terraform.plan"
