@@ -121,7 +121,9 @@ jobs:
     #     access_token: ${{ github.token }}
 
     - name: ENV
-      run: env | sort
+      run: |
+        env | sort
+        echo ${{ github.event.inputs.env }}
 
   ###########################
   # APPLY
@@ -140,7 +142,9 @@ jobs:
     steps:
 
     - name: ENV
-      run: env | sort
+      run: |
+        env | sort
+        echo ${{ github.event.inputs.env }}
 
     - name: PRINT
       id: print-stuff
