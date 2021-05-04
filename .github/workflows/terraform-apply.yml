@@ -159,7 +159,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: "terraform.plan"
-        path: "terraform.plan"
+        path: "."
 
     - name: MKDIR
       run: |
