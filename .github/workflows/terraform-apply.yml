@@ -3,10 +3,11 @@ name: 'Terraform Apply'
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #   - master
-  # pull_request:
+    inputs:
+      env:
+        description: 'environment(dev/tst/stg)'
+        required: true
+        default: 'dev'
 
 jobs:
 
@@ -119,6 +120,8 @@ jobs:
     #     workflow_id: ${{ github.run_id }}
     #     access_token: ${{ github.token }}
 
+    - name: ENV
+      run: env | sort
 
   ###########################
   # APPLY
@@ -135,6 +138,9 @@ jobs:
         shell: bash
 
     steps:
+
+    - name: ENV
+      run: env | sort
 
     - name: PRINT
       id: print-stuff
