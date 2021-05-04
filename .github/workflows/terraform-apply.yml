@@ -159,7 +159,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: "terraform.plan"
-        # path: "."
+        path: "terraform.plan"
 
     - name: MKDIR
       run: |
@@ -169,7 +169,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: "terraform.plan"
-        path: "./plans"
+        path: "./plans/terraform.plan"
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
