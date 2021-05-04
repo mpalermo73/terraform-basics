@@ -166,9 +166,9 @@ jobs:
 
     - name: Download outfile artifact
       uses: actions/download-artifact@v2
-      working-directory: ./infrastructure
       with:
         name: "terraform.plan"
+        path: "./plans"
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
