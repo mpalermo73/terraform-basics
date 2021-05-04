@@ -19,9 +19,9 @@ resource "aws_default_route_table" "route_table" {
     gateway_id = aws_internet_gateway.gw.id
   }
 
-#  tags = {
-#    Name = "default table"
-#  }
+  #  tags = {
+  #    Name = "default table"
+  #  }
 }
 
 resource "aws_subnet" "main" {
@@ -37,9 +37,9 @@ resource "aws_subnet" "alt" {
 }
 
 resource "aws_lb" "service01_lb" {
-  name               = "service01-lb"
-  security_groups    = [aws_security_group.service01_service_ports.id]
-  subnets            = [aws_subnet.main.id, aws_subnet.alt.id]
+  name            = "service01-lb"
+  security_groups = [aws_security_group.service01_service_ports.id]
+  subnets         = [aws_subnet.main.id, aws_subnet.alt.id]
 }
 
 resource "aws_lb_listener" "service01_lb_listener" {

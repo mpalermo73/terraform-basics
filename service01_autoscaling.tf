@@ -8,17 +8,17 @@ resource "aws_placement_group" "service01" {
 
 resource "aws_autoscaling_group" "service01_autoscaling_group" {
   lifecycle { create_before_destroy = true }
-  name = "service01-${aws_launch_configuration.service01.name}"
-  desired_capacity          = 2
-  max_size                  = 4
-  min_size                  = 2
-#  health_check_grace_period = 300
+  name             = "service01-${aws_launch_configuration.service01.name}"
+  desired_capacity = 2
+  max_size         = 4
+  min_size         = 2
+  #  health_check_grace_period = 300
   health_check_type         = "EC2"
   force_delete              = true
-  termination_policies = ["OldestInstance"]
+  termination_policies      = ["OldestInstance"]
   wait_for_capacity_timeout = "6m"
   launch_configuration      = aws_launch_configuration.service01.name
-  vpc_zone_identifier = [ aws_subnet.main.id, ]
+  vpc_zone_identifier       = [aws_subnet.main.id, ]
 
   initial_lifecycle_hook {
     name                 = "service01_lifecycle_hook"
