@@ -91,6 +91,7 @@ jobs:
       # working-directory: ./plans
       with:
         name: "terraform.plan"
+        path: "."
         # path: "terraform.plan"
         # name: "${{env.GITHUB_RUN_ID}}.plan"
         # path: "${{env.GITHUB_RUN_ID}}.plan"
