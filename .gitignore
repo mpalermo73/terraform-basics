@@ -1,5 +1,5 @@
-.terraform.lock.hcl
-*//.terraform
-terraform.tfstate*
 .terraform
+.terraform.lock.hcl
 .terraform.tfstate.lock.info
+.vscode
+terraform.tfstate*
