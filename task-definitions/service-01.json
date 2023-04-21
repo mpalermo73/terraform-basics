@@ -1,7 +1,7 @@
 [
   {
-    "name": "service01",
-    "image": "service01",
+    "name": "service-01",
+    "image": "jenkins",
     "cpu": 10,
     "memory": 512,
     "essential": true,
@@ -13,8 +13,8 @@
     ]
   },
   {
-    "name": "service02",
-    "image": "service02",
+    "name": "service-02",
+    "image": "service-02",
     "cpu": 10,
     "memory": 256,
     "essential": true,
