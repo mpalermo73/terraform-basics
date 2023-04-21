@@ -1,0 +1,8 @@
+- name: service01
+  image: service01
+  cpu: 10
+  memory: 500
+  essential: true
+  portMappings:
+    - containerPort: 80
+      hostPort: 80
