@@ -1,5 +1,5 @@
-- name: service-01
-  image: jenkins
+- name: service01
+  image: service01
   cpu: 10
   memory: 500
   essential: true

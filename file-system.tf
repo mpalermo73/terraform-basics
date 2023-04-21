@@ -1,4 +1,4 @@
-resource "aws_efs_file_system" "service_01" {
+resource "aws_efs_file_system" "service01_efs_file_system" {
   creation_token = "service-01"
 
   tags = {
