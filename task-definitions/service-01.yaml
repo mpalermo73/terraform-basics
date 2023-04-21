@@ -1,8 +1,0 @@
-- name: service-01
-  image: jenkins
-  cpu: 10
-  memory: 500
-  essential: true
-  portMappings:
-    - containerPort: 80
-      hostPort: 80

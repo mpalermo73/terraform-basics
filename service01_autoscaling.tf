@@ -13,7 +13,6 @@ resource "aws_autoscaling_group" "service01_autoscaling_group" {
   max_size         = 4
   min_size         = 2
   #  health_check_grace_period = 300
-  metrics_granularity       = "10Minute"
   health_check_type         = "EC2"
   force_delete              = true
   termination_policies      = ["OldestInstance"]
@@ -39,7 +38,7 @@ resource "aws_autoscaling_group" "service01_autoscaling_group" {
   }
 }
 
-# resource "aws_autoscaling_attachment" "service01_autoscaling_attachment" {
-#   autoscaling_group_name = aws_autoscaling_group.service01_autoscaling_group.id
-#   alb_target_group_arn   = aws_lb_target_group.service01_target_group.arn
-# }
+resource "aws_autoscaling_attachment" "service01_autoscaling_attachment" {
+  autoscaling_group_name = aws_autoscaling_group.service01_autoscaling_group.id
+  alb_target_group_arn   = aws_lb_target_group.service01_target_group.arn
+}
