@@ -17,7 +17,7 @@
     "image": "service02",
     "cpu": 10,
     "memory": 256,
-    "essential": true,
+    "essential": false,
     "portMappings": [
       {
         "containerPort": 443,
